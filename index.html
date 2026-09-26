@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sorting Algorithm Visualizer</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #050b1a;
+            color: #e8f4ff;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 25px auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #58b8ff;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #91a9c2;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: #0a1429;
+            border: 1px solid #16385d;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            color: #66c7ff;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* INPUT */
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        #arrayInput {
+            flex: 1;
+            min-width: 250px;
+            padding: 13px;
+            border-radius: 8px;
+            border: 1px solid #245b88;
+            background: #07101f;
+            color: white;
+            font-size: 16px;
+        }
+
+        button {
+            border: 1px solid #2e8fd1;
+            background: #0b2038;
+            color: #dff4ff;
+            padding: 11px 17px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #12385c;
+        }
+
+        button.active {
+            background: #167ac0;
+            border-color: #69c9ff;
+        }
+
+        .hint {
+            color: #7891aa;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        /* ALGORITHMS */
+
+        .algorithm-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* MAIN AREA */
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 18px;
+        }
+
+        /* VISUALIZER */
+
+        .view-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .bars-area {
+            min-height: 330px;
+            background: #060e1e;
+            border: 1px solid #153653;
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 7px;
+            padding: 25px 15px;
+        }
+
+        .bar-wrapper {
+            height: 270px;
+            display: flex;
+            align-items: flex-end;
+            flex: 1;
+            max-width: 65px;
+        }
+
+        .bar {
+            width: 100%;
+            background: linear-gradient(to top, #0878bd, #66c7ff);
+            border-radius: 7px 7px 0 0;
+            transition: height 0.35s ease, background 0.25s ease;
+            position: relative;
+        }
+
+        .bar.active {
+            background: linear-gradient(to top, #8ce0ff, #ffffff);
+            box-shadow: 0 0 18px #42bfff;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -24px;
+            width: 100%;
+            text-align: center;
+            color: #bde9ff;
+            font-size: 13px;
+        }
+
+        .array-display {
+            margin-top: 15px;
+            padding: 14px;
+            border-radius: 8px;
+            background: #071426;
+            border: 1px solid #183d5d;
+            color: #8ed9ff;
+            font-family: monospace;
+            font-size: 16px;
+            word-break: break-word;
+        }
+
+        .array-box-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .array-box {
+            min-width: 55px;
+            padding: 16px 10px;
+            background: #071426;
+            border: 1px solid #183d5d;
+            border-radius: 8px;
+            color: #8ed9ff;
+            font-family: monospace;
+            font-size: 17px;
+            font-weight: bold;
+            text-align: center;
+            transition: background 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+        }
+
+        .array-box.active {
+            background: linear-gradient(to top, #8ce0ff, #ffffff);
+            color: #04101f;
+            box-shadow: 0 0 18px #42bfff;
+        }
+
+        /* WORKING STEPS */
+
+        .steps {
+            max-height: 360px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .step {
+            padding: 11px;
+            margin-bottom: 8px;
+            background: #071426;
+            border-left: 3px solid #1b466a;
+            border-radius: 6px;
+        }
+
+        .step.current {
+            background: #0c2944;
+            border-left-color: #62caff;
+            box-shadow: 0 0 10px rgba(65, 185, 255, 0.18);
+        }
+
+        .step-number {
+            color: #65caff;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .step-action {
+            color: white;
+            font-weight: bold;
+            margin-left: 5px;
+            font-size: 17px;
+        }
+
+        .step-explanation {
+            color: #9eb4c9;
+            font-size: 15px;
+            margin-top: 4px;
+            font-weight: bold;
+        }
+
+        /* STATS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat {
+            background: #071426;
+            border: 1px solid #153653;
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .stat-title {
+            color: #789ab6;
+            font-size: 12px;
+        }
+
+        .stat-value {
+            color: #66caff;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* CODE */
+
+        .code-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        pre {
+            margin: 0;
+            background: #040a14;
+            border: 1px solid #163653;
+            border-radius: 10px;
+            padding: 18px;
+            overflow-x: auto;
+            color: #c8edff;
+            line-height: 1.55;
+            font-size: 14px;
+        }
+
+        /* COMPLEXITY */
+
+        .complexity {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .complexity-box {
+            background: #071426;
+            border: 1px solid #163653;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .complexity-title {
+            color: #7797b0;
+            font-size: 13px;
+        }
+
+        .complexity-value {
+            color: #69caff;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 6px;
+        }
+
+        /* CONTROLS */
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 14px;
+            background: #071426;
+            border: 1px solid #1d5279;
+            border-radius: 9px;
+            color: #8edcff;
+            font-weight: bold;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 550px) {
+            .complexity {
+                grid-template-columns: 1fr;
+            }
+
+            .bars-area {
+                gap: 3px;
+            }
+
+            .bar-value {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>⚡ SORTING ALGORITHM VISUALIZER</h1>
+
+    <div class="subtitle">
+        Visualize sorting algorithms step by step
+    </div>
+
+    <!-- INPUT -->
+
+    <div class="card">
+
+        <div class="section-title">Enter Your Array</div>
+
+        <div class="input-row">
+
+            <input
+                type="text"
+                id="arrayInput"
+                value=""
+                placeholder="Enter numbers separated by commas"
+            >
+
+            <button id="startBtn">
+                Start Execution
+            </button>
+
+        </div>
+
+        <div class="hint">
+            Enter your own numbers separated by commas.
+        </div>
+
+    </div>
+
+
+    <!-- ALGORITHM -->
+
+    <div class="card">
+
+        <div class="section-title">
+            Select Algorithm
+        </div>
+
+        <div class="algorithm-buttons">
+
+            <button class="algorithm active" data-algorithm="bubble">
+                Bubble Sort
+            </button>
+
+            <button class="algorithm" data-algorithm="insertion">
+                Insertion Sort
+            </button>
+
+            <button class="algorithm" data-algorithm="selection">
+                Selection Sort
+            </button>
+
+            <button class="algorithm" data-algorithm="quick">
+                Quick Sort
+            </button>
+
+            <button class="algorithm" data-algorithm="merge">
+                Merge Sort
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main-grid">
+
+        <!-- LEFT -->
+
+        <div>
+
+            <div class="card">
+
+                <div class="section-title">
+                    Visualization
+                </div>
+
+                <div class="view-buttons">
+
+                    <button id="barsBtn" class="active">
+                        Bars
+                    </button>
+
+                    <button id="arrayBtn">
+                        Array
+                    </button>
+
+                </div>
+
+                <div id="visualArea" class="bars-area">
+                    <div style="color:#59748d;">
+                        Enter numbers and start execution
+                    </div>
+                </div>
+
+                <div id="arrayDisplay" class="array-display">
+                    Current Array: [ ]
+                </div>
+
+                <div class="stats">
+
+                    <div class="stat">
+                        <div class="stat-title">
+                            Current Step
+                        </div>
+                        <div class="stat-value" id="stepStat">
+                            0
+                        </div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-title">
+                            Comparisons
+                        </div>
+                        <div class="stat-value" id="comparisonStat">
+                            0
+                        </div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-title">
+                            Swaps / Shifts
+                        </div>
+                        <div class="stat-value" id="swapStat">
+                            0
+                        </div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-title">
+                            Array Size
+                        </div>
+                        <div class="stat-value" id="sizeStat">
+                            0
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="controls">
+
+                    <button id="previousBtn">
+                        ◀ Previous
+                    </button>
+
+                    <button id="nextBtn">
+                        Next ▶
+                    </button>
+
+                    <button id="autoBtn">
+                        ▶ Auto Play
+                    </button>
+
+                    <button id="resetBtn">
+                        ↻ Reset
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT -->
+
+        <div>
+
+            <div class="card">
+
+                <div class="section-title">
+                    Working Steps
+                </div>
+
+                <div id="steps" class="steps">
+                    <div style="color:#617a92;">
+                        Working steps will appear here.
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PSEUDOCODE / CODE -->
+
+    <div class="card">
+
+        <div class="section-title">
+            Pseudocode & Programming Code
+        </div>
+
+        <div class="code-tabs">
+
+            <button class="code-tab active" data-code="pseudo">
+                Pseudocode
+            </button>
+
+            <button class="code-tab" data-code="cpp">
+                C++
+            </button>
+
+            <button class="code-tab" data-code="python">
+                Python
+            </button>
+
+            <button class="code-tab" data-code="java">
+                Java
+            </button>
+
+        </div>
+
+        <pre id="codeDisplay"></pre>
+
+    </div>
+
+
+    <!-- COMPLEXITY -->
+
+    <div class="card">
+
+        <div class="section-title">
+            Time & Space Complexity
+        </div>
+
+        <div id="complexityBox" class="complexity">
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let selectedAlgorithm = "bubble";
+
+let steps = [];
+
+let currentStep = 0;
+
+let autoTimer = null;
+
+let selectedView = "bars";
+
+
+/* =========================
+   PSEUDOCODES
+========================= */
+
+const pseudocode = {
+
+bubble: `BUBBLE SORT
+
+1. START
+2. Read array A of n elements
+3. For i = 0 to n - 2
+4.     For j = 0 to n - i - 2
+5.         Compare A[j] and A[j + 1]
+6.         If A[j] > A[j + 1]
+7.             Swap A[j] and A[j + 1]
+8.         End If
+9.     End For
+10. End For
+11. STOP`,
+
+insertion: `INSERTION SORT
+
+1. START
+2. Read array A of n elements
+3. For i = 1 to n - 1
+4.     key = A[i]
+5.     j = i - 1
+6.     While j >= 0 AND A[j] > key
+7.         A[j + 1] = A[j]
+8.         j = j - 1
+9.     End While
+10.    A[j + 1] = key
+11. End For
+12. STOP`,
+
+selection: `SELECTION SORT
+
+1. START
+2. Read array A of n elements
+3. For i = 0 to n - 2
+4.     min = i
+5.     For j = i + 1 to n - 1
+6.         Compare A[j] and A[min]
+7.         If A[j] < A[min]
+8.             min = j
+9.         End If
+10.    End For
+11.    Swap A[i] and A[min]
+12. End For
+13. STOP`,
+
+quick: `QUICK SORT
+
+1. START
+2. Choose a pivot element
+3. Set i = low - 1
+4. For j = low to high - 1
+5.     Compare A[j] with pivot
+6.     If A[j] < pivot
+7.         i = i + 1
+8.         Swap A[i] and A[j]
+9.     End If
+10. End For
+11. Swap A[i + 1] and A[high]
+12. Place pivot in its correct position
+13. Recursively apply Quick Sort to left part
+14. Recursively apply Quick Sort to right part
+15. STOP`,
+
+merge: `MERGE SORT
+
+1. START
+2. If low < high
+3.     Find middle = (low + high) / 2
+4.     Divide array into two halves
+5.     Apply Merge Sort to left half
+6.     Apply Merge Sort to right half
+7.     Compare elements of both halves
+8.     Place the smaller element into the array
+9.     Copy remaining elements
+10.    Merge both sorted halves
+11. End If
+12. STOP`
+
+};
+
+
+/* =========================
+   C++
+========================= */
+
+const cppCode = {
+
+bubble: `#include <iostream>
+using namespace std;
+
+void bubbleSort(int A[], int n)
+{
+    for(int i = 0; i < n - 1; i++)
+    {
+        for(int j = 0; j < n - i - 1; j++)
+        {
+            if(A[j] > A[j + 1])
+            {
+                swap(A[j], A[j + 1]);
+            }
+        }
+    }
+}`,
+
+insertion: `#include <iostream>
+using namespace std;
+
+void insertionSort(int A[], int n)
+{
+    for(int i = 1; i < n; i++)
+    {
+        int key = A[i];
+        int j = i - 1;
+
+        while(j >= 0 && A[j] > key)
+        {
+            A[j + 1] = A[j];
+            j--;
+        }
+
+        A[j + 1] = key;
+    }
+}`,
+
+selection: `#include <iostream>
+using namespace std;
+
+void selectionSort(int A[], int n)
+{
+    for(int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+
+        for(int j = i + 1; j < n; j++)
+        {
+            if(A[j] < A[min])
+            {
+                min = j;
+            }
+        }
+
+        swap(A[i], A[min]);
+    }
+}`,
+
+quick: `#include <iostream>
+using namespace std;
+
+int partition(int A[], int low, int high)
+{
+    int pivot = A[high];
+    int i = low - 1;
+
+    for(int j = low; j < high; j++)
+    {
+        if(A[j] < pivot)
+        {
+            i++;
+            swap(A[i], A[j]);
+        }
+    }
+
+    swap(A[i + 1], A[high]);
+
+    return i + 1;
+}
+
+void quickSort(int A[], int low, int high)
+{
+    if(low < high)
+    {
+        int p = partition(A, low, high);
+
+        quickSort(A, low, p - 1);
+        quickSort(A, p + 1, high);
+    }
+}`,
+
+merge: `#include <iostream>
+using namespace std;
+
+void merge(int A[], int low, int mid, int high)
+{
+    int i = low;
+    int j = mid + 1;
+
+    while(i <= mid && j <= high)
+    {
+        if(A[i] <= A[j])
+        {
+            i++;
+        }
+        else
+        {
+            j++;
+        }
+    }
+}
+
+void mergeSort(int A[], int low, int high)
+{
+    if(low < high)
+    {
+        int mid = (low + high) / 2;
+
+        mergeSort(A, low, mid);
+        mergeSort(A, mid + 1, high);
+
+        merge(A, low, mid, high);
+    }
+}`
+
+};
+
+
+/* =========================
+   PYTHON
+========================= */
+
+const pythonCode = {
+
+bubble: `def bubble_sort(A):
+    n = len(A)
+
+    for i in range(n - 1):
+        for j in range(n - i - 1):
+
+            if A[j] > A[j + 1]:
+                A[j], A[j + 1] = A[j + 1], A[j]`,
+
+insertion: `def insertion_sort(A):
+    for i in range(1, len(A)):
+
+        key = A[i]
+        j = i - 1
+
+        while j >= 0 and A[j] > key:
+            A[j + 1] = A[j]
+            j -= 1
+
+        A[j + 1] = key`,
+
+selection: `def selection_sort(A):
+    n = len(A)
+
+    for i in range(n - 1):
+
+        minimum = i
+
+        for j in range(i + 1, n):
+
+            if A[j] < A[minimum]:
+                minimum = j
+
+        A[i], A[minimum] = A[minimum], A[i]`,
+
+quick: `def quick_sort(A, low, high):
+
+    if low < high:
+
+        pivot = A[high]
+        i = low - 1
+
+        for j in range(low, high):
+
+            if A[j] < pivot:
+                i += 1
+                A[i], A[j] = A[j], A[i]
+
+        A[i + 1], A[high] = A[high], A[i + 1]
+
+        p = i + 1
+
+        quick_sort(A, low, p - 1)
+        quick_sort(A, p + 1, high)`,
+
+merge: `def merge_sort(A):
+
+    if len(A) > 1:
+
+        mid = len(A) // 2
+
+        left = A[:mid]
+        right = A[mid:]
+
+        merge_sort(left)
+        merge_sort(right)
+
+        i = 0
+        j = 0
+        k = 0
+
+        while i < len(left) and j < len(right):
+
+            if left[i] <= right[j]:
+                A[k] = left[i]
+                i += 1
+            else:
+                A[k] = right[j]
+                j += 1
+
+            k += 1
+
+        while i < len(left):
+            A[k] = left[i]
+            i += 1
+            k += 1
+
+        while j < len(right):
+            A[k] = right[j]
+            j += 1
+            k += 1`
+
+};
+
+
+/* =========================
+   JAVA
+========================= */
+
+const javaCode = {
+
+bubble: `public static void bubbleSort(int[] A)
+{
+    int n = A.length;
+
+    for(int i = 0; i < n - 1; i++)
+    {
+        for(int j = 0; j < n - i - 1; j++)
+        {
+            if(A[j] > A[j + 1])
+            {
+                int temp = A[j];
+                A[j] = A[j + 1];
+                A[j + 1] = temp;
+            }
+        }
+    }
+}`,
+
+insertion: `public static void insertionSort(int[] A)
+{
+    for(int i = 1; i < A.length; i++)
+    {
+        int key = A[i];
+        int j = i - 1;
+
+        while(j >= 0 && A[j] > key)
+        {
+            A[j + 1] = A[j];
+            j--;
+        }
+
+        A[j + 1] = key;
+    }
+}`,
+
+selection: `public static void selectionSort(int[] A)
+{
+    for(int i = 0; i < A.length - 1; i++)
+    {
+        int min = i;
+
+        for(int j = i + 1; j < A.length; j++)
+        {
+            if(A[j] < A[min])
+            {
+                min = j;
+            }
+        }
+
+        int temp = A[i];
+        A[i] = A[min];
+        A[min] = temp;
+    }
+}`,
+
+quick: `public static void quickSort(
+    int[] A, int low, int high)
+{
+    if(low < high)
+    {
+        int pivot = A[high];
+        int i = low - 1;
+
+        for(int j = low; j < high; j++)
+        {
+            if(A[j] < pivot)
+            {
+                i++;
+
+                int temp = A[i];
+                A[i] = A[j];
+                A[j] = temp;
+            }
+        }
+
+        int temp = A[i + 1];
+        A[i + 1] = A[high];
+        A[high] = temp;
+
+        int p = i + 1;
+
+        quickSort(A, low, p - 1);
+        quickSort(A, p + 1, high);
+    }
+}`,
+
+merge: `public static void mergeSort(
+    int[] A, int low, int high)
+{
+    if(low < high)
+    {
+        int mid = (low + high) / 2;
+
+        mergeSort(A, low, mid);
+        mergeSort(A, mid + 1, high);
+
+        // Merge both sorted halves
+    }
+}`
+
+};
+
+
+/* =========================
+   COMPLEXITY
+========================= */
+
+const complexity = {
+
+    bubble: {
+        best: "O(n)",
+        average: "O(n²)",
+        worst: "O(n²)",
+        space: "O(1)"
+    },
+
+    insertion: {
+        best: "O(n)",
+        average: "O(n²)",
+        worst: "O(n²)",
+        space: "O(1)"
+    },
+
+    selection: {
+        best: "O(n²)",
+        average: "O(n²)",
+        worst: "O(n²)",
+        space: "O(1)"
+    },
+
+    quick: {
+        best: "O(n log n)",
+        average: "O(n log n)",
+        worst: "O(n²)",
+        space: "O(log n) average / O(n) worst"
+    },
+
+    merge: {
+        best: "O(n log n)",
+        average: "O(n log n)",
+        worst: "O(n log n)",
+        space: "O(n)"
+    }
+
+};
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const visualArea =
+    document.getElementById("visualArea");
+
+const arrayDisplay =
+    document.getElementById("arrayDisplay");
+
+const stepsContainer =
+    document.getElementById("steps");
+
+const codeDisplay =
+    document.getElementById("codeDisplay");
+
+const complexityBox =
+    document.getElementById("complexityBox");
+
+const stepStat =
+    document.getElementById("stepStat");
+
+const comparisonStat =
+    document.getElementById("comparisonStat");
+
+const swapStat =
+    document.getElementById("swapStat");
+
+const sizeStat =
+    document.getElementById("sizeStat");
+
+
+/* =========================
+   ALGORITHM BUTTONS
+========================= */
+
+document.querySelectorAll(".algorithm")
+.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        document.querySelectorAll(".algorithm")
+        .forEach(btn => btn.classList.remove("active"));
+
+        button.classList.add("active");
+
+        selectedAlgorithm =
+            button.dataset.algorithm;
+
+        updateCode();
+
+        updateComplexity();
+
+        resetVisualizer();
+    });
+
+});
+
+
+/* =========================
+   CODE TABS
+========================= */
+
+let selectedCode = "pseudo";
+
+document.querySelectorAll(".code-tab")
+.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        document.querySelectorAll(".code-tab")
+        .forEach(btn => btn.classList.remove("active"));
+
+        button.classList.add("active");
+
+        selectedCode =
+            button.dataset.code;
+
+        updateCode();
+    });
+
+});
+
+
+function updateCode() {
+
+    if(selectedCode === "pseudo") {
+
+        codeDisplay.textContent =
+            pseudocode[selectedAlgorithm];
+
+    }
+
+    else if(selectedCode === "cpp") {
+
+        codeDisplay.textContent =
+            cppCode[selectedAlgorithm];
+
+    }
+
+    else if(selectedCode === "python") {
+
+        codeDisplay.textContent =
+            pythonCode[selectedAlgorithm];
+
+    }
+
+    else if(selectedCode === "java") {
+
+        codeDisplay.textContent =
+            javaCode[selectedAlgorithm];
+
+    }
+
+}
+
+
+/* =========================
+   COMPLEXITY DISPLAY
+========================= */
+
+function updateComplexity() {
+
+    const data =
+        complexity[selectedAlgorithm];
+
+    complexityBox.innerHTML = `
+
+        <div class="complexity-box">
+
+            <div class="complexity-title">
+                Best Case
+            </div>
+
+            <div class="complexity-value">
+                ${data.best}
+            </div>
+
+        </div>
+
+
+        <div class="complexity-box">
+
+            <div class="complexity-title">
+                Average Case
+            </div>
+
+            <div class="complexity-value">
+                ${data.average}
+            </div>
+
+        </div>
+
+
+        <div class="complexity-box">
+
+            <div class="complexity-title">
+                Worst Case
+            </div>
+
+            <div class="complexity-value">
+                ${data.worst}
+            </div>
+
+        </div>
+
+
+        <div class="complexity-box">
+
+            <div class="complexity-title">
+                Space Complexity
+            </div>
+
+            <div class="complexity-value">
+                ${data.space}
+            </div>
+
+        </div>
+    `;
+}
+
+
+/* =========================
+   VIEW BUTTONS
+========================= */
+
+document.getElementById("barsBtn")
+.addEventListener("click", () => {
+
+    selectedView = "bars";
+
+    document.getElementById("barsBtn")
+        .classList.add("active");
+
+    document.getElementById("arrayBtn")
+        .classList.remove("active");
+
+    renderCurrentStep();
+
+});
+
+
+document.getElementById("arrayBtn")
+.addEventListener("click", () => {
+
+    selectedView = "array";
+
+    document.getElementById("arrayBtn")
+        .classList.add("active");
+
+    document.getElementById("barsBtn")
+        .classList.remove("active");
+
+    renderCurrentStep();
+
+});
+
+
+/* =========================
+   START
+========================= */
+
+document.getElementById("startBtn")
+.addEventListener("click", async () => {
+
+    const input =
+        document.getElementById("arrayInput")
+        .value.trim();
+
+    if(!input) {
+
+        alert("Please enter numbers first.");
+
+        return;
+    }
+
+
+    let array;
+
+    try {
+
+        array = input
+            .split(",")
+            .map(x => Number(x.trim()));
+
+    }
+
+    catch {
+
+        alert("Enter valid numbers.");
+
+        return;
+    }
+
+
+    if(
+        array.length < 2 ||
+        array.some(x => !Number.isFinite(x))
+    ) {
+
+        alert(
+            "Enter at least 2 valid numbers separated by commas."
+        );
+
+        return;
+    }
+
+
+    clearInterval(autoTimer);
+
+    autoTimer = null;
+
+    currentStep = 0;
+
+
+    try {
+
+        const response =
+            await fetch("/steps", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    algorithm:
+                        selectedAlgorithm,
+
+                    array: array
+
+                })
+
+            });
+
+
+        const data =
+            await response.json();
+
+
+        steps = data.steps || [];
+
+        currentStep = 0;
+
+        renderAll();
+
+
+        setTimeout(() => {
+
+            autoPlay();
+
+        }, 700);
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        alert(
+            "Could not connect to Flask server."
+        );
+
+    }
+
+});
+
+
+/* =========================
+   RENDER ALL
+========================= */
+
+function renderAll() {
+
+    renderCurrentStep();
+
+    renderSteps();
+
+}
+
+
+/* =========================
+   RENDER CURRENT STEP
+========================= */
+
+function renderCurrentStep() {
+
+    if(!steps.length) {
+
+        return;
+    }
+
+
+    const step =
+        steps[currentStep];
+
+
+    if(selectedView === "bars") {
+
+        renderBars(step);
+
+    }
+
+    else {
+
+        renderArrayBoxes(step);
+
+    }
+
+
+    arrayDisplay.textContent =
+        "Current Array: [ "
+        + step.array.join(", ")
+        + " ]";
+
+
+    stepStat.textContent =
+        `${currentStep + 1} / ${steps.length}`;
+
+
+    comparisonStat.textContent =
+        step.comparisons ?? 0;
+
+
+    swapStat.textContent =
+        step.swaps ?? 0;
+
+
+    sizeStat.textContent =
+        step.array.length;
+
+}
+
+
+/* =========================
+   BARS
+========================= */
+
+function renderBars(step) {
+
+    visualArea.innerHTML = "";
+
+    const arr = step.array;
+
+    const max =
+        Math.max(...arr.map(x => Math.abs(x)), 1);
+
+
+    arr.forEach((value, index) => {
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "bar-wrapper";
+
+
+        const bar =
+            document.createElement("div");
+
+        bar.className =
+            "bar";
+
+
+        if(
+            step.active_indices &&
+            step.active_indices.includes(index)
+        ) {
+
+            bar.classList.add("active");
+
+        }
+
+
+        const height =
+            Math.max(
+                20,
+                (Math.abs(value) / max) * 240
+            );
+
+
+        bar.style.height =
+            height + "px";
+
+
+        const valueText =
+            document.createElement("div");
+
+        valueText.className =
+            "bar-value";
+
+        valueText.textContent =
+            value;
+
+
+        bar.appendChild(valueText);
+
+        wrapper.appendChild(bar);
+
+        visualArea.appendChild(wrapper);
+
+    });
+
+}
+
+
+/* =========================
+   ARRAY BOXES
+========================= */
+
+function renderArrayBoxes(step) {
+
+    visualArea.innerHTML = "";
+
+    const container =
+        document.createElement("div");
+
+    container.className =
+        "array-box-container";
+
+    step.array.forEach((value, index) => {
+
+        const box =
+            document.createElement("div");
+
+        box.className = "array-box";
+
+        if(
+            step.active_indices &&
+            step.active_indices.includes(index)
+        ) {
+
+            box.classList.add("active");
+
+        }
+
+        box.textContent = value;
+
+        container.appendChild(box);
+
+    });
+
+    visualArea.appendChild(container);
+
+}
+
+
+/* =========================
+   WORKING STEPS
+========================= */
+
+function renderSteps() {
+
+    stepsContainer.innerHTML = "";
+
+    steps
+        .slice(0, currentStep + 1)
+        .forEach((step, index) => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "step";
+
+            if(index === currentStep) {
+
+                div.classList.add("current");
+
+            }
+
+
+            div.innerHTML = `
+
+                <span class="step-number">
+                    Step ${index + 1}
+                </span>
+
+                <span class="step-action">
+                    ${step.action}
+                </span>
+
+                <div class="step-explanation">
+                    ${step.explanation}
+                </div>
+
+            `;
+
+
+            stepsContainer.appendChild(div);
+
+        });
+
+
+    stepsContainer.scrollTop =
+        stepsContainer.scrollHeight;
+
+}
+
+
+/* =========================
+   NEXT
+========================= */
+
+document.getElementById("nextBtn")
+.addEventListener("click", () => {
+
+    if(!steps.length) return;
+
+    if(currentStep < steps.length - 1) {
+
+        currentStep++;
+
+        renderAll();
+
+    }
+
+});
+
+
+/* =========================
+   PREVIOUS
+========================= */
+
+document.getElementById("previousBtn")
+.addEventListener("click", () => {
+
+    if(!steps.length) return;
+
+    if(currentStep > 0) {
+
+        currentStep--;
+
+        renderAll();
+
+    }
+
+});
+
+
+/* =========================
+   AUTO PLAY
+========================= */
+
+function autoPlay() {
+
+    clearInterval(autoTimer);
+
+    autoTimer =
+        setInterval(() => {
+
+            if(currentStep < steps.length - 1) {
+
+                currentStep++;
+
+                renderAll();
+
+            }
+
+            else {
+
+                clearInterval(autoTimer);
+
+                autoTimer = null;
+
+            }
+
+        }, 900);
+
+}
+
+
+document.getElementById("autoBtn")
+.addEventListener("click", () => {
+
+    if(!steps.length) return;
+
+    if(autoTimer) {
+
+        clearInterval(autoTimer);
+
+        autoTimer = null;
+
+        document.getElementById("autoBtn")
+            .textContent = "▶ Auto Play";
+
+    }
+
+    else {
+
+        autoPlay();
+
+        document.getElementById("autoBtn")
+            .textContent = "⏸ Pause";
+
+    }
+
+});
+
+
+/* =========================
+   RESET
+========================= */
+
+function resetVisualizer() {
+
+    clearInterval(autoTimer);
+
+    autoTimer = null;
+
+    steps = [];
+
+    currentStep = 0;
+
+    visualArea.innerHTML = `
+
+        <div style="color:#59748d;">
+            Enter numbers and start execution
+        </div>
+
+    `;
+
+    arrayDisplay.textContent =
+        "Current Array: [ ]";
+
+    stepsContainer.innerHTML = `
+
+        <div style="color:#617a92;">
+            Working steps will appear here.
+        </div>
+
+    `;
+
+    stepStat.textContent = "0";
+
+    comparisonStat.textContent = "0";
+
+    swapStat.textContent = "0";
+
+    sizeStat.textContent = "0";
+
+    document.getElementById("autoBtn")
+        .textContent = "▶ Auto Play";
+
+}
+
+
+document.getElementById("resetBtn")
+.addEventListener("click", resetVisualizer);
+
+
+/* =========================
+   INITIAL DISPLAY
+========================= */
+
+updateCode();
+
+updateComplexity();
+
+</script>
+
+</body>
+</html>
